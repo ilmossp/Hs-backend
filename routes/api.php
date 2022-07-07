@@ -4,6 +4,7 @@ use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Models\User;
+use App\Models\Patient;
 use Illuminate\Http\JsonResponse;
 
 /*
@@ -37,3 +38,15 @@ Route::post('user_create',function(Request $request){
         ['message' => 'user created successfully']
     );
 });
+
+Route::post('patient_create',function(Request $request){
+    $validatedPatient=$request->validate([
+        'cin' => 'required',
+        'city' => 'required'
+    ]);
+    Patient::create($validatedPatient);
+    return response()->json( 
+        ['message' => 'patient created successfully']
+    );
+});
+
