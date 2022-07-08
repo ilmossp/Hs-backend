@@ -24,6 +24,8 @@ class User extends Authenticatable
         'password',
     ];
 
+    protected $with = ['userable'];
+
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -44,7 +46,7 @@ class User extends Authenticatable
     ];
 
     public function userable(){
-        $this->MorphTo(__FUNCTION__,'userable_type','userable_id');
+       return $this->morphTo();
     }
 
 }
