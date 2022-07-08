@@ -51,27 +51,8 @@ class DepartmentController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
+
 
     /**
      * Update the specified resource in storage.
@@ -80,9 +61,21 @@ class DepartmentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Department $department)
     {
-        //
+        $validateDepartment = Validator::make(
+            $request->all(),
+            [
+                'name' => 'required|unique:departments|max:255'
+            ]
+        );
+        if ($validateDepartment->fails()) {
+            return response()->json(['message' => $validateDepartment->messages()], 400);
+        } else {
+            $department->name = $request->name;
+            $department->save();
+            return response()->json(['messgage' => 'department updated successfully']);
+        }
     }
 
     /**
@@ -91,8 +84,11 @@ class DepartmentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Department $department)
     {
-        //
+        $department->delete();
+        return response()->json([
+            'message' => 'department deleted successfully'
+        ]);
     }
 }

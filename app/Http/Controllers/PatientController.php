@@ -31,7 +31,7 @@ class PatientController extends Controller
 
     public function getAll()
     {
-        $patients = User::where('userable_type', 'App\Models\Patient')->get();
+        $patients = User::where('userable_type', 'App\Models\Patient')->paginate(5);
         return response()->json([
             'patients' => $patients
         ]);
@@ -39,9 +39,14 @@ class PatientController extends Controller
 
     public function get($id)
     {
-        $patient = User::where('userable_id', $id)->get();
-        return response()->json([
-            'patient' => $patient
-        ]);
+        $patient = User::where('userable_id', $id)->first();
+        if($patient==null){
+            return response()->json(['message'=>'patient not found'],404);
+        }
+        else{
+            return response()->json([
+                'patient' => $patient
+            ]);
+        }
     }
 }

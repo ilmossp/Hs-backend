@@ -30,14 +30,24 @@ Route::get('users', function () {
     return UserResource::collection(User::all());
 });
 
-Route::get('patients',[PatientController::class,'getAll']);
 
-Route::get('patients/{id}',[PatientController::class,'get']);
 
-Route::post('patients/create',[PatientController::class,'save']);
+Route::prefix('patients')->group(function () {
+    Route::get('/', [PatientController::class, 'getAll']);
 
-Route::get('departments',[DepartmentController::class,'getAll']);
+    Route::get('{id}', [PatientController::class, 'get']);
 
-Route::get('departments/{id}',[DepartmentController::class,'get']);
+    Route::post('create', [PatientController::class, 'save']);
+});
 
-Route::post('departments/create',[DepartmentController::class,'save']);
+Route::prefix('departments')->group(function () {
+    Route::get('/', [DepartmentController::class, 'getAll']);
+
+    Route::get('/{department}', [DepartmentController::class, 'get']);
+
+    Route::post('create', [DepartmentController::class, 'save']);
+
+    Route::post('/{department}',[DepartmentController::class],'update');
+
+    Route::delete('/{department}',[DepartmentController::class],'destroy');
+});
