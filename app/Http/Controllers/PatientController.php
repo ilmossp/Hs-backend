@@ -1,37 +1,47 @@
 <?php
 
 namespace App\Http\Controllers;
+
+use App\Http\Resources\UserResource;
 use App\Models\Patient;
 use App\Models\User;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 
 class PatientController extends Controller
 {
     public function save(Request $request)
     {
-        $validatedPatient = $request->validate([
-            'cin' => 'required|unique',
-            'city' => 'required|string'
-        ]);
-        $validatedUser = $request->validate([
+        $validator = Validator::make($request->all(), [
+            'cin' => 'required|unique:patients',
+            'city' => 'required|string',
             'name' => 'required|string',
-            'email' => 'required|unique',
+            'email' => 'required|email|unique:users',
             'password' => 'required'
         ]);
-
-        $patient = Patient::create($validatedPatient);
-        $user = $patient->user()->create($validatedUser);
-        return response()->json(
-            [
-                'message' => 'patient created successfully',
-            ]
-        );
+        if ($validator->fails()) {
+            return response()->json(['message' => $validator->messages()], 400);
+        } else {
+            $colRequest = collect($request->all());
+            $patient = Patient::create($colRequest->only(['cin', 'city'])->toArray());
+            $patient->user()->create($colRequest->only(['name', 'email', 'password'])->toArray());
+            return response()->json(['message' => 'user created successfully']);
+        }
     }
 
-
-    public function get(Request $request) {
-        $patient=User::where('userable_id',$request->id);
-        return $patient;
+    public function getAll()
+    {
+        $patients = User::where('userable_type', 'App\Models\Patient')->get();
+        return response()->json([
+            'patients' => $patients
+        ]);
     }
 
+    public function get($id)
+    {
+        $patient = User::where('userable_id', $id)->get();
+        return response()->json([
+            'patient' => $patient
+        ]);
+    }
 }

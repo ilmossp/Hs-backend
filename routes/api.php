@@ -1,10 +1,13 @@
 <?php
 
+use App\Http\Controllers\DepartmentController;
 use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Models\User;
 use App\Http\Controllers\PatientController;
+use App\Models\Department;
+use App\Models\Patient;
 use Illuminate\Http\JsonResponse;
 
 /*
@@ -23,23 +26,18 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
-Route::get('users',function(){
+Route::get('users', function () {
     return UserResource::collection(User::all());
 });
 
-Route::get('fetch_user',);
+Route::get('patients',[PatientController::class,'getAll']);
 
-Route::post('user_create',function(Request $request){
-    $validatedUser=$request->validate([
-        'name' => 'required',
-        'email'=> 'required',
-        'password' => 'required'
-    ]);
-    User::create($validatedUser);
-    return response()->json( 
-        ['message' => 'user created successfully']
-    );
-});
+Route::get('patients/{id}',[PatientController::class,'get']);
 
-Route::post('patient_create',PatientController::class,'PatientController@save');
+Route::post('patients/create',[PatientController::class,'save']);
 
+Route::get('departments',[DepartmentController::class,'getAll']);
+
+Route::get('departments/{id}',[DepartmentController::class,'get']);
+
+Route::post('departments/create',[DepartmentController::class,'save']);
