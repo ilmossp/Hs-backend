@@ -38,16 +38,21 @@ Route::prefix('patients')->group(function () {
     Route::get('{id}', [PatientController::class, 'get']);
 
     Route::post('create', [PatientController::class, 'save']);
+
+    Route::post('{patient}',[PatientController::class,'update']);
+
+    Route::delete('{patient}',[PatientController::class,'destroy']);
+
 });
 
 Route::prefix('departments')->group(function () {
     Route::get('/', [DepartmentController::class, 'getAll']);
 
-    Route::get('/{department}', [DepartmentController::class, 'get']);
+    Route::get('{department}', [DepartmentController::class, 'get']);
 
     Route::post('create', [DepartmentController::class, 'save']);
 
-    Route::post('/{department}',[DepartmentController::class],'update');
+    Route::post('{department}',[DepartmentController::class,'update']);
 
-    Route::delete('/{department}',[DepartmentController::class],'destroy');
+    Route::delete('{department}',[DepartmentController::class,'destroy']);
 });

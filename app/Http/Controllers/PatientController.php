@@ -5,11 +5,35 @@ namespace App\Http\Controllers;
 use App\Http\Resources\UserResource;
 use App\Models\Patient;
 use App\Models\User;
+use Dotenv\Store\File\Paths;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 
 class PatientController extends Controller
 {
+
+
+    public function getAll()
+    {
+        $patients = User::where('userable_type', 'App\Models\Patient')->paginate(5);
+        return response()->json([
+            'patients' => $patients
+        ]);
+    }
+
+    public function get($id)
+    {
+        $patient = User::where('userable_id', $id)->first();
+        if ($patient == null) {
+            return response()->json(['message' => 'patient not found'], 404);
+        } else {
+            return response()->json([
+                'patient' => $patient
+            ]);
+        }
+    }
+
+
     public function save(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -29,24 +53,22 @@ class PatientController extends Controller
         }
     }
 
-    public function getAll()
-    {
-        $patients = User::where('userable_type', 'App\Models\Patient')->paginate(5);
-        return response()->json([
-            'patients' => $patients
-        ]);
-    }
 
-    public function get($id)
-    {
-        $patient = User::where('userable_id', $id)->first();
-        if($patient==null){
-            return response()->json(['message'=>'patient not found'],404);
-        }
-        else{
-            return response()->json([
-                'patient' => $patient
-            ]);
-        }
+    public function update(Patient $patient,Request $request){
+        $patient->user()->update(
+            ['cin'=> $request->cin,'city'=>$request->city,'name'=>$request->name,'email'=>$request->email]
+        );
+        $patient->save();
+
+
+    }
+    
+    
+    public function destroy(Patient $patient){
+        $patient->delete();
+        $patient->save();
+        return response()->json([
+            'message'=>'Patient deleted successfully'
+        ]);
     }
 }
